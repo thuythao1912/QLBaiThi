@@ -1,0 +1,157 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace QL_BaiThi
+{
+    public partial class frmNguoiSuDung : Form
+    {
+        DataSet dsUser = new DataSet();
+        SqlDataAdapter daUser = new SqlDataAdapter();
+        BindingSource bsUser = new BindingSource();
+        bool blnThem = false;
+
+        void GanDuLieu(){
+                txtTenTK.DataBindings.Add(new Binding("Text", bsUser, "TenTaiKhoan"));
+                txtMK.DataBindings.Add(new Binding("Text", bsUser, "MatKhau"));
+                
+            }
+
+        public frmNguoiSuDung()
+        {
+            InitializeComponent();
+        }
+
+        private void frmNguoiSuDung_Load(object sender, EventArgs e)
+        {
+            string strSelect = "Select * from NguoiSuDung";
+            MyPublics.OpenData(strSelect, dsUser, "NguoiSuDung", daUser);
+            bsUser.DataSource = dsUser;
+            bsUser.DataMember = "NguoiSuDung";
+            cbMaTT.DataSource = bsUser;
+            cbMaTT.DisplayMember = "MaTT";
+            cbMaTT.ValueMember = "MaTT";
+            
+
+            txtTenTK.MaxLength = 8;
+            txtMK.MaxLength = 40;
+
+            GanDuLieu();
+
+            dgvNguoiSuDung.DataSource = dsUser;
+            dgvNguoiSuDung.DataMember = "NguoiSuDung";
+
+            dgvNguoiSuDung.Width = 450;
+            dgvNguoiSuDung.Columns[0].Width = 100;
+            dgvNguoiSuDung.Columns[0].HeaderText = "Tên tài khoản";
+            dgvNguoiSuDung.Columns[1].Width = 100;
+            dgvNguoiSuDung.Columns[1].HeaderText = "Mật khẩu";
+            dgvNguoiSuDung.Columns[2].Width = 100;
+            dgvNguoiSuDung.Columns[2].HeaderText = "Quyền sử dụng";
+            dgvNguoiSuDung.Columns[3].Width = 100;
+            dgvNguoiSuDung.Columns[3].HeaderText = "Mã trung tâm";
+
+            dgvNguoiSuDung.AllowUserToAddRows = false;
+            dgvNguoiSuDung.AllowUserToDeleteRows = false;
+            dgvNguoiSuDung.EditMode = DataGridViewEditMode.EditProgrammatically;
+           // DieuKhienKhiBinhThuong();
+        }
+
+        
+    }
+}
+**************
+DataSet dsUser = new DataSet();
+        DataSet dsTT = new DataSet();
+        DataView dvUser = new DataView();
+        DataSet dsQuyenSD = new DataSet();
+        bool blnThem = false;
+
+        void NhanDuLieu() {
+            string strSelect = "Select * From NguoiSuDung";
+            MyPublics.OpenData(strSelect, dsUser, "NguoiSuDung");
+        }
+
+        void GanDuLieu(){
+            MessageBox.Show(dvUser.Count.ToString());
+            if (dvUser.Count > 0)
+            {
+                txtTenTK.Text = dgvNguoiSuDung[0, dgvNguoiSuDung.CurrentRow.Index].Value.ToString();
+                txtMK.Text = dgvNguoiSuDung[1, dgvNguoiSuDung.CurrentRow.Index].Value.ToString();
+                cbQuyenSD.SelectedIndex = cbQuyenSD.FindString(dgvNguoiSuDung[2, dgvNguoiSuDung.CurrentRow.Index].Value.ToString());
+            }
+            else {
+                txtTenTK.Clear();
+                txtMK.Clear();
+                cbQuyenSD.SelectedIndex = -1;
+            }    
+        }
+
+        public frmNguoiSuDung()
+        {
+            InitializeComponent();
+        }
+
+        private void frmNguoiSuDung_Load(object sender, EventArgs e)
+        {
+            string strSelect = "Select MaTT, TenTT from TrungTam";
+            MyPublics.OpenData(strSelect, dsTT, "TrungTam");
+
+            cbMaTT.DataSource = dsTT.Tables["TrungTam"];
+            cbMaTT.DisplayMember = "TenTT";
+            cbMaTT.ValueMember = "MaTT";
+            dsQuyenSD.Tables.Add("DSQuyenSD");
+            dsQuyenSD.Tables["DSQuyenSD"].Columns.Add("QuyenSD");
+            dsQuyenSD.Tables["DSQuyenSD"].Rows.Add("User");
+            dsQuyenSD.Tables["DSQuyenSD"].Rows.Add("AdminTT");
+            dsQuyenSD.Tables["DSQuyenSD"].Rows.Add("AdminChinh");
+            cbQuyenSD.DataSource = dsQuyenSD;
+            cbQuyenSD.DisplayMember = "DSQuyenSD.QuyenSD";
+            cbQuyenSD.ValueMember = "DSQuyenSD.QuyenSD";
+                 
+            txtTenTK.MaxLength = 100;
+            txtMK.MaxLength = 40;
+            NhanDuLieu();
+
+            dvUser.Table = dsUser.Tables["NguoiSuDung"];
+            dvUser.RowFilter = "MaTT like '" + cbMaTT.SelectedValue + "'";
+            dgvNguoiSuDung.DataSource = dsUser;
+            
+            dgvNguoiSuDung.Width = 1000;
+            dgvNguoiSuDung.AllowUserToAddRows = false;
+            dgvNguoiSuDung.AllowUserToDeleteRows = false;
+            
+           
+            //dgvNguoiSuDung.Columns[0].Width = 100;
+            //dgvNguoiSuDung.Columns[0].HeaderText = "Tên tài khoản";
+            //dgvNguoiSuDung.Columns[1].Width = 100;
+            //dgvNguoiSuDung.Columns[1].HeaderText = "Mật khẩu";
+            //dgvNguoiSuDung.Columns[2].Width = 100;
+            //dgvNguoiSuDung.Columns[2].HeaderText = "Quyền sử dụng";
+            //dgvNguoiSuDung.Columns[3].Width = 100;
+            //dgvNguoiSuDung.Columns[3].HeaderText = "Mã trung tâm";
+            MessageBox.Show("hi");
+            dgvNguoiSuDung.EditMode = DataGridViewEditMode.EditProgrammatically;
+            dgvNguoiSuDung.CellFormatting += new DataGridViewCellFormattingEventHandler(this.dgvNguoiSuDung_CellFormatting);
+            GanDuLieu();
+            // DieuKhienKhiBinhThuong();
+        }
+
+        private void dgvNguoiSuDung_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == 6) {
+                if (e.Value != null) {
+                    e.Value = new string('*', e.Value.ToString().Length);
+                }
+            }
+        }
+
+        
+    }
